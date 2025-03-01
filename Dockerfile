@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM --platform=linux/arm64/v8 node:20-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies using the correct architecture
-RUN npm ci --arch=arm64 --platform=linuxmusl
+RUN npm ci
 
 # Copy source files
 COPY . .
@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Create production image
-FROM --platform=linux/arm64/v8 nginx:1.23-alpine
+FROM nginx:1.23-alpine
 
 # Metadata
 LABEL maintainer="Igor Nazarov <tigron.dev@gmail.com>"
