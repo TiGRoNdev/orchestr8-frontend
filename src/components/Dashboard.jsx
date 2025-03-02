@@ -14,7 +14,7 @@ const Dashboard = () => {
 
     const fetchStats = async () => {
         try {
-            const response = await fetch('https://tigron-server.lan/api/stat', {
+            const response = await fetch('/api/stat', {
                 method: 'GET',
                 headers: { 'Authorization': ls.get('sessionKey', { decrypt: true }) },
             });

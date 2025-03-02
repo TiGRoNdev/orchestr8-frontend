@@ -26,7 +26,7 @@ const CreatePod = () => {
     useEffect(() => {
         const fetchToken = async () => {
             try {
-                const response = await fetch("https://tigron-server.lan/api/docker/token");
+                const response = await fetch("/api/docker/token");
                 if (response.ok) {
                     const data = await response.json();
                     setToken(data.token);
@@ -38,7 +38,7 @@ const CreatePod = () => {
 
         const fetchStorages = async () => {
             try {
-                const response = await fetch("https://tigron-server.lan/api/volume", {
+                const response = await fetch("/api/volume", {
                     method: 'GET',
                     headers: { 'Authorization': ls.get('sessionKey', { decrypt: true }) },
                 });
@@ -53,7 +53,7 @@ const CreatePod = () => {
 
         const fetchGPU = async () => {
             try {
-                const response = await fetch("https://tigron-server.lan/api/gpu", {
+                const response = await fetch("/api/gpu", {
                     method: 'GET',
                     headers: { 'Authorization': ls.get('sessionKey', { decrypt: true }) },
                 });
@@ -77,7 +77,7 @@ const CreatePod = () => {
     const submitForm = async () => {
         try {
             setLoading(true);
-            const response = await fetch("https://tigron-server.lan/api/pod", {
+            const response = await fetch("/api/pod", {
                 method: 'POST',
                 body: JSON.stringify(formData),
                 headers: {
@@ -181,7 +181,7 @@ const CreatePod = () => {
                     />
 
                     <Autocomplete
-                        apiUrl="https://tigron-server.lan/api/docker/search"
+                        apiUrl="/api/docker/search"
                         onSelect={(value) => setFormData({ ...formData, container_image: value })}
                         debounceTime={500}
                         token={token}

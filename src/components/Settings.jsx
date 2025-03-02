@@ -22,7 +22,7 @@ import {
 import { Delete, LockReset } from '@mui/icons-material';
 import ls from "localstorage-slim";
 
-const API_URL = 'https://tigron-server.lan/api/register';
+const API_URL = '/api/register';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     borderRadius: '12px',
@@ -46,7 +46,7 @@ const UserManagement = () => {
     useEffect(() => {
         const loadUsers = async () => {
             try {
-                const response = await fetch('https://tigron-server.lan/api/users', {
+                const response = await fetch('/api/users', {
                     method: 'GET',
                     headers: { 'Authorization': ls.get('sessionKey', { decrypt: true }) },
                 });

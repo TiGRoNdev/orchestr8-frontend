@@ -28,7 +28,7 @@ const LoginForm = () => {
             setLoading(true);
             setError('');
 
-            let response = await fetch('https://tigron-server.lan/api/login', {
+            let response = await fetch('/api/login', {
                 method: 'POST',
                 body: JSON.stringify({ username, password }),
                 headers: { 'Content-Type': 'application/json' },
