@@ -29,7 +29,7 @@ const PodsList = () => {
     useEffect(() => {
         const fetchPods = async () => {
             try {
-                const response = await fetch('http://tigron-server.lan/api/pod', {
+                const response = await fetch('https://tigron-server.lan/api/pod', {
                     method: 'GET',
                     headers: { 'Authorization': ls.get('sessionKey', { decrypt: true }) }
                 });

@@ -12,7 +12,7 @@ const Storage = () => {
     useEffect(() => {
         const loadUserVolumes = async () => {
             try {
-                const response = await fetch('http://tigron-server.lan/api/volume', {
+                const response = await fetch('https://tigron-server.lan/api/volume', {
                     method: 'GET',
                     headers: { 'Authorization': ls.get('sessionKey', { decrypt: true }) },
                 });
@@ -31,7 +31,7 @@ const Storage = () => {
 
     const createVolume = async () => {
         try {
-            const response = await fetch('http://tigron-server.lan/api/volume', {
+            const response = await fetch('https://tigron-server.lan/api/volume', {
                 method: 'POST',
                 body: JSON.stringify(formData),
                 headers: {
