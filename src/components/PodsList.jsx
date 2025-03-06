@@ -4,6 +4,29 @@ import { Box, Grid, Card, CardContent, Typography, Chip, Divider, CircularProgre
 import { styled } from '@mui/material/styles';
 import ls from "localstorage-slim";
 
+function timeSince(date) {
+
+    var seconds = Math.floor((new Date() - date) / 1000);
+
+    var interval = seconds / 31536000;
+    if (interval > 1) {
+        return Math.floor(interval) + "y";
+    }
+    interval = seconds / 86400;
+    if (interval > 1) {
+        return Math.floor(interval) + "d";
+    }
+    interval = seconds / 3600;
+    if (interval > 1) {
+        return Math.floor(interval) + "h";
+    }
+    interval = seconds / 60;
+    if (interval > 1) {
+        return Math.floor(interval) + "m";
+    }
+    return Math.floor(seconds) + "s";
+}
+
 const StatusChip = styled(Chip)(({ status }) => ({
     backgroundColor: status === 'Running' ? '#4CAF50' : '#F44336',
     color: 'white',
@@ -46,6 +69,26 @@ const PodsList = () => {
         fetchPods();
     }, []);
 
+    useEffect(() => {
+        const fetchPods = async () => {
+            try {
+                const response = await fetch('/api/pod', {
+                    method: 'GET',
+                    headers: { 'Authorization': ls.get('sessionKey', { decrypt: true }) }
+                });
+                if (!response.ok) throw new Error('Failed to fetch pods');
+                const data = await response.json();
+                setPods(data);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPods();
+    }, [pods.length]);
+
     const handleCardClick = (podId) => {
         navigate(`/pods/${podId}`);
     };
@@ -83,7 +126,7 @@ const PodsList = () => {
                                     <Typography variant="h6" component="div">
                                         {pod.name}
                                     </Typography>
-                                    <StatusChip status={pod.status} label={pod.status} size="small" />
+                                    <StatusChip status={pod.k8s_info.status.phase} label={pod.k8s_info.status.phase} size="small" />
                                 </Box>
 
                                 <Divider sx={{ my: 2 }} />
@@ -91,16 +134,16 @@ const PodsList = () => {
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <Typography variant="body2" color="text.secondary">
-                                            Namespace:
+                                            Restarts:
                                         </Typography>
-                                        <Typography variant="body2">{pod.namespace}</Typography>
+                                        <Typography variant="body2">{pod.k8s_info.status.containerStatuses ? Math.max(pod.k8s_info.status.containerStatuses.map(s => s.restartCount)) : 0}</Typography>
                                     </Box>
 
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <Typography variant="body2" color="text.secondary">
                                             Age:
                                         </Typography>
-                                        <Typography variant="body2">{pod.age}</Typography>
+                                        <Typography variant="body2">{timeSince(new Date(pod.k8s_info.status.startTime))}</Typography>
                                     </Box>
                                 </Box>
                             </CardContent>

@@ -13,6 +13,7 @@ const CreatePod = () => {
         memory: '10G',
         gpu: 0,
         port: '80',
+        mount_path: '/workspace',
         storage_id: 0
     });
     const [errors, setErrors] = useState({});
@@ -221,59 +222,75 @@ const CreatePod = () => {
                 </Box>
 
                 {/* Storage Selection */}
-                <Box sx={{ mb: 4 }}>
-                    <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-                        Attach Storage Volume
-                    </Typography>
-                    <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
-                        {storages.map(storage => (
-                            <Box
-                                key={storage.id}
-                                onClick={() => handleStorageSelect(storage)}
-                                sx={{
-                                    p: 2,
-                                    borderRadius: 2,
-                                    border: `2px solid ${selectedStorage === storage.id
-                                        ? theme.palette.primary.main
-                                        : theme.palette.divider}`,
-                                    cursor: 'pointer',
-                                    transition: 'border-color 0.2s',
-                                    '&:hover': {
-                                        borderColor: theme.palette.primary.light
-                                    }
-                                }}
-                            >
-                                <Typography variant="subtitle1">{storage.name}</Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    {storage.capacity}
-                                </Typography>
-                            </Box>
-                        ))}
+                {
+                    storages.length > 0 &&
+                    <Box sx={{ mb: 4 }}>
+                        <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                            Attach Storage Volume
+                        </Typography>
+                        <TextField
+                            fullWidth
+                            label="Mount Path"
+                            value={formData.mount_path}
+                            onChange={(e) => setFormData({ ...formData, mount_path: e.target.value })}
+                            error={!!errors.mount_path}
+                            helperText={errors.mount_path}
+                            sx={{ mb: 3 }}
+                            required
+                        />
+                        <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
+                            {storages.map(storage => (
+                                <Box
+                                    key={storage.id}
+                                    onClick={() => handleStorageSelect(storage)}
+                                    sx={{
+                                        p: 2,
+                                        borderRadius: 2,
+                                        border: `2px solid ${selectedStorage === storage.id
+                                            ? theme.palette.primary.main
+                                            : theme.palette.divider}`,
+                                        cursor: 'pointer',
+                                        transition: 'border-color 0.2s',
+                                        '&:hover': {
+                                            borderColor: theme.palette.primary.light
+                                        }
+                                    }}
+                                >
+                                    <Typography variant="subtitle1">{storage.name}</Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        {storage.capacity}
+                                    </Typography>
+                                </Box>
+                            ))}
+                        </Box>
                     </Box>
-                </Box>
+                }
 
                 {/* GPU Selection */}
-                <Box sx={{ mb: 4 }}>
-                    <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-                        Select GPUs
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                        {gpuOptions.map(gpu => (
-                            <Chip
-                                key={gpu.id}
-                                label={`${gpu.type} (${gpu.vram})`}
-                                onClick={() => handleGpuSelect(gpu)}
-                                color={selectedGpus.includes(gpu.id) ? 'primary' : 'default'}
-                                variant={selectedGpus.includes(gpu.id) ? 'filled' : 'outlined'}
-                                sx={{
-                                    height: 48,
-                                    borderRadius: 2,
-                                    '& .MuiChip-label': { px: 2.5 }
-                                }}
-                            />
-                        ))}
+                {
+                    gpuOptions.length > 0 &&
+                    <Box sx={{ mb: 4 }}>
+                        <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                            Select GPUs
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                            {gpuOptions.map(gpu => (
+                                <Chip
+                                    key={gpu.id}
+                                    label={`${gpu.type} (${gpu.vram})`}
+                                    onClick={() => handleGpuSelect(gpu)}
+                                    color={selectedGpus.includes(gpu.id) ? 'primary' : 'default'}
+                                    variant={selectedGpus.includes(gpu.id) ? 'filled' : 'outlined'}
+                                    sx={{
+                                        height: 48,
+                                        borderRadius: 2,
+                                        '& .MuiChip-label': { px: 2.5 }
+                                    }}
+                                />
+                            ))}
+                        </Box>
                     </Box>
-                </Box>
+                }
 
                 <Button
                     type="submit"

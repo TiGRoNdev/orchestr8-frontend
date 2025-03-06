@@ -1,5 +1,16 @@
 import { useState, useEffect } from 'react';
-import { TextField, Button, Box, Typography, useTheme } from '@mui/material';
+import {
+    TextField,
+    Button,
+    Box,
+    Typography,
+    useTheme,
+    IconButton,
+    DialogTitle,
+    DialogContent,
+    DialogContentText, DialogActions, Dialog
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Slider from "./Slider.jsx";
 import ls from "localstorage-slim";
 
@@ -8,6 +19,7 @@ const Storage = () => {
     const [formData, setFormData] = useState({ name: '', capacity: '77.5G' });
     const [errors, setErrors] = useState({});
     const [volumes, setVolumes] = useState([]);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(null);
 
     useEffect(() => {
         const loadUserVolumes = async () => {
@@ -59,6 +71,31 @@ const Storage = () => {
         setErrors({});
     };
 
+    const deleteVolume = async (id) => {
+        try {
+            const response = await fetch('/api/volume', {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': ls.get('sessionKey', { decrypt: true }),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id })
+            });
+
+            if (response.ok) {
+                setVolumes(prev => prev.filter(volume => volume.id !== id));
+            }
+        } catch (error) {
+            console.error('Error deleting volume:', error);
+        }
+    };
+
+    const handleDeleteVolume = (id) => {
+        deleteVolume(id);
+        setOpenDeleteDialog(null);
+    }
+
+
     return (
         <Box sx={{ p: 4, maxWidth: 1200, mx: 'auto' }}>
             {/* Volumes Grid */}
@@ -75,14 +112,30 @@ const Storage = () => {
                         bgcolor: 'background.paper',
                         boxShadow: theme.shadows[1],
                         transition: 'transform 0.2s',
-                        '&:hover': { transform: 'translateY(-2px)' }
+                        '&:hover': { transform: 'translateY(-2px)' },
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
                     }}>
-                        <Typography variant="subtitle1" fontWeight={600}>
-                            {volume.name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            Capacity: {volume.capacity}
-                        </Typography>
+                        <Box>
+                            <Typography variant="subtitle1" fontWeight={600}>
+                                {volume.name}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Capacity: {volume.capacity}
+                            </Typography>
+                        </Box>
+
+                        <IconButton
+                            aria-label="delete"
+                            onClick={() => setOpenDeleteDialog(volume.id)}
+                            sx={{
+                                color: theme.palette.error.main,
+                                ml: 2  // Add some left margin for spacing
+                            }}
+                        >
+                            <DeleteIcon fontSize="medium" />
+                        </IconButton>
                     </Box>
                 ))}
             </Box>
@@ -136,6 +189,28 @@ const Storage = () => {
                     Create Storage
                 </Button>
             </Box>
+            <Dialog open={!!openDeleteDialog} onClose={() => setOpenDeleteDialog(null)}>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to permanently delete this volume? All data will be lost. This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={() => setOpenDeleteDialog(null)}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={() => handleDeleteVolume(openDeleteDialog)}
+                        color="error"
+                        variant="contained"
+                    >
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };
