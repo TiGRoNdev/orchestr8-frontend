@@ -18,7 +18,7 @@ const PodLogs = ({ podId }) => {
         if (!podId) return;
 
         const connectWebSocket = () => {
-            const socket = new WebSocket(`wss://tigron-server.lan/api/ws/logs/${podId}`);
+            const socket = new WebSocket(`wss://admin.tigron.dev/api/ws/logs/${podId}`);
             ws.current = socket;
 
             socket.onopen = () => {
