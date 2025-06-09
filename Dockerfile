@@ -20,7 +20,6 @@ FROM nginx:1.23-alpine
 
 # Metadata
 LABEL maintainer="Igor Nazarov <tigron.dev@gmail.com>"
-LABEL architecture="arm64/v8"
 
 # Copy built assets from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
